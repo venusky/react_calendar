@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Calendar, CalendarProps, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -13,30 +13,31 @@ interface Event {
     HostName?: string;
 }
 
-const MyCalender: React.FC<Omit<CalendarProps, 'localizer'>> = (props) => {
+const MonCalendrier: React.FC<Omit<CalendarProps, 'localizer'>> = (props) => {
+    const [events, setEvents] = useState<Event[]>([]);
+    const [showModal, setShowModal] = useState(false);
+    const [selectStartDate, setSelectStartDate] = useState<Date | null>(null);
+    const [selectEndDate, setSelectEndDate] = useState<Date | null>(null);
+    const [eventTitle, setEventTitle] = useState('');
 
-    const [events, setEvents] = useState<Event[]>([])
-    const [showModal, setShowModal] = useState(false)
-    const [selectDate, setSelectDate] = useState<Date | null>(null)
-    const [eventTitle, setEventTitle] = useState('')
+    const handleSelectSlot = (slotInfo: any) => {
+        setShowModal(true);
+        setSelectStartDate(slotInfo.start);
+        setSelectEndDate(slotInfo.end);
+    };
 
-    const handleSelectSlot = (slotInfo:any) =>{
-        setShowModal(true)
-        setSelectDate(slotInfo.start)
-    }
-
-    const saveEvent = () =>{
-        if (eventTitle && selectDate) {
+    const saveEvent = () => {
+        if (eventTitle && selectStartDate && selectEndDate) {
             const newEvent = {
                 title: eventTitle,
-                start: selectDate,
-                end: moment(selectDate).add(1, 'hours').toDate()
+                start: selectStartDate,
+                end: selectEndDate,
             };
             setEvents([...events, newEvent]);
-            setShowModal(false)
-            setEventTitle('')
+            setShowModal(false);
+            setEventTitle('');
         }
-    }
+    };
 
     return (
         <div>
@@ -53,33 +54,49 @@ const MyCalender: React.FC<Omit<CalendarProps, 'localizer'>> = (props) => {
 
             {showModal && (
                 <div className="modal" style={{
-                    display:'block',
-                    backgroundColor: 'rgba(0.0.0.0.5',
-                    position:'fixed',
-                    top:0,
-                    bottom:0,
-                    right:0
+                    display: 'block',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    position: 'fixed',
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
                 }}>
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title">Set your event</h5>
-                                <button type="button" className="btn-close" onClick={()=> setShowModal(false)}></button>
+                                <h5 className="modal-title">Set An Event</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
                             </div>
                             <div className="modal-body">
-                                <label className={"py-8"}>tape event title.</label>
+                                <label className="py-8">Event Title :</label>
                                 <input
                                     value={eventTitle}
                                     onChange={(e) => setEventTitle(e.target.value)}
-                                    type={'text'}
-                                    className={'form-control'}
-                                    id={'eventTitle'}
+                                    type="text"
+                                    className="form-control"
+                                    id="eventTitle"
+                                />
+                                <label className="py-8">Start date :</label>
+                                <input
+                                    value={selectStartDate ? moment(selectStartDate).format('YYYY-MM-DDTHH:mm') : ''}
+                                    onChange={(e) => setSelectStartDate(e.target.value ? new Date(e.target.value) : null)}
+                                    type="datetime-local"
+                                    className="form-control"
+                                    id="startDate"
+                                />
+                                <label className="py-8">End date :</label>
+                                <input
+                                    value={selectEndDate ? moment(selectEndDate).format('YYYY-MM-DDTHH:mm') : ''}
+                                    onChange={(e) => setSelectEndDate(e.target.value ? new Date(e.target.value) : null)}
+                                    type="datetime-local"
+                                    className="form-control"
+                                    id="endDate"
                                 />
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={()=> setShowModal(false)} data-bs-dismiss="modal">Close
-                                </button>
-                                <button type="button" onClick={saveEvent} className="btn btn-primary">Save changes</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)} data-bs-dismiss="modal">Close</button>
+                                <button type="button" onClick={saveEvent} className="btn btn-primary">Save</button>
                             </div>
                         </div>
                     </div>
@@ -89,4 +106,4 @@ const MyCalender: React.FC<Omit<CalendarProps, 'localizer'>> = (props) => {
     );
 };
 
-export default MyCalender;
+export default MonCalendrier;
