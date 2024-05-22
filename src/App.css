@@ -1,5 +1,9 @@
+@import '~react-big-calendar/lib/css/react-big-calendar.css';
+
+
 .App {
   text-align: center;
+  margin: 50px;
 }
 
 .App-logo {
